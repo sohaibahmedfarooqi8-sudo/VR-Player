@@ -21,14 +21,8 @@ class VideoPlayerController(
     private val context: Context,
     private val listener: ViewCreatedListener,
     viewId: Int,
-    private val binaryMessenger: BinaryMessenger
-    class VideoPlayerController(
-    private val context: Context,
-    private val listener: ViewCreatedListener,
-    viewId: Int,
     private val binaryMessenger: BinaryMessenger,
     private val interactionMode: String = "both"
-) : MethodChannel.MethodCallHandler {
 ) : MethodChannel.MethodCallHandler {
     private var videoUrl: HashMap<*, *>? = null
     private var localPath: String? = null
