@@ -22,6 +22,13 @@ class VideoPlayerController(
     private val listener: ViewCreatedListener,
     viewId: Int,
     private val binaryMessenger: BinaryMessenger
+    class VideoPlayerController(
+    private val context: Context,
+    private val listener: ViewCreatedListener,
+    viewId: Int,
+    private val binaryMessenger: BinaryMessenger,
+    private val interactionMode: String = "both"
+) : MethodChannel.MethodCallHandler {
 ) : MethodChannel.MethodCallHandler {
     private var videoUrl: HashMap<*, *>? = null
     private var localPath: String? = null
@@ -324,8 +331,11 @@ class VideoPlayerController(
         val vrSettings = VRSettings()
         vrSettings.isFlingEnabled = true
         vrSettings.isVrModeEnabled = false
-        vrSettings.interactionMode = VRInteractionMode.MotionWithTouch
-
+       vrSettings.interactionMode = when (interactionMode) {
+            "touch" -> VRInteractionMode.Touch
+            "motion" -> VRInteractionMode.Motion
+            else -> VRInteractionMode.MotionWithTouch
+        }
         vrSettings.isZoomWithPinchEnabled = true
         return vrSettings
     }
