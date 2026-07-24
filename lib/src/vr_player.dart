@@ -19,6 +19,7 @@ class VrPlayer extends StatefulWidget {
   /// https://developers.google.com/vr/discover/360-degree-media
   final double width;
   final double height;
+  final String interactionMode;
 
   const VrPlayer({
     required this.onCreated,
@@ -26,6 +27,7 @@ class VrPlayer extends StatefulWidget {
     required this.y,
     required this.width,
     required this.height,
+    this.interactionMode = 'both',
     super.key,
   });
 
@@ -108,9 +110,9 @@ class _VideoPlayerState extends State<VrPlayer> with WidgetsBindingObserver {
                 );
               },
               onCreatePlatformView: (params) {
-                return PlatformViewsService.initExpensiveAndroidView(
+              return PlatformViewsService.initExpensiveAndroidView(
                   id: params.id,
-                  creationParams: {},
+                  creationParams: {'interactionMode': widget.interactionMode},
                   creationParamsCodec: const StandardMessageCodec(),
                   layoutDirection: TextDirection.ltr,
                   viewType: viewType,
