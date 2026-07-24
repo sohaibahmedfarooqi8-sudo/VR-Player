@@ -103,9 +103,9 @@ class _VideoPlayerState extends State<VrPlayer> with WidgetsBindingObserver {
                 return AndroidViewSurface(
                   controller: controller as AndroidViewController,
                   hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-                  gestureRecognizers: const <Factory<
-                      OneSequenceGestureRecognizer>>{
-                    Factory(TapGestureRecognizer.new),
+                  gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+                    Factory(() => TapGestureRecognizer()),
+                    Factory(() => PanGestureRecognizer()),
                   },
                 );
               },
