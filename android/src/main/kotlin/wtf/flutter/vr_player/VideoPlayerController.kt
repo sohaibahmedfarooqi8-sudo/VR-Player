@@ -282,16 +282,29 @@ class VideoPlayerController(
     private fun addListener(basicPlayer: KalturaBasicPlayer) {
         basicPlayer.addListener<PlayerEvent.StateChanged>(this, PlayerEvent.stateChanged) { event ->
             when (event.newState) {
-                PlayerState.READY -> {
-                    videoPlayerState = videoPlayerState?.let {
-                        basicPlayer.seekTo(it.currentPosition)
-                        isVRModeEnabled = true
-                        toggleVRMode()
-                        if (it.isPlaying) basicPlayer.play()
-                        null
-                    }
-                    playerEventStateChanged?.success(mapOf(Pair("state", 1)))
-                }
+             PlayerState.READY -> {
+    videoPlayerState = videoPlayerState?.let {
+        basicPlayer.seekTo(it.currentPosition)
+        isVRModeEnabled = true
+        toggleVRMode()
+        if (it.isPlaying) basicPlayer.play()
+        null
+    }
+
+    // NEW — force interactionMode via the runtime controller,
+    // not just the initial VRSettings preset.
+    basicPlayer.getController(com.kaltura.playkitvr.VRController::class.java)?.let { vr ->
+        val mode = when (interactionMode) {
+            "touch" -> VRInteractionMode.Touch
+            "motion" -> VRInteractionMode.Motion
+            else -> VRInteractionMode.MotionWithTouch
+        }
+        vr.setInteractionMode(mode)
+        android.util.Log.d("VrPlayerDebug", "runtime setInteractionMode = $mode")
+    }
+
+    playerEventStateChanged?.success(mapOf(Pair("state", 1)))
+}
                 PlayerState.LOADING -> {
                     playerEventStateChanged?.success(mapOf(Pair("state", 0)))
                 }
