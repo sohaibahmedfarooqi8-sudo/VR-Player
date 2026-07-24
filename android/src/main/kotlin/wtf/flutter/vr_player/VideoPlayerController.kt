@@ -321,7 +321,8 @@ class VideoPlayerController(
         }
     }
 
-    private fun configureVRSettings(): VRSettings {
+   private fun configureVRSettings(): VRSettings {
+        android.util.Log.d("VrPlayerDebug", "interactionMode received = $interactionMode")
         val vrSettings = VRSettings()
         vrSettings.isFlingEnabled = true
         vrSettings.isVrModeEnabled = false
