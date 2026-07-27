@@ -13,8 +13,9 @@ import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 
 class VideoView internal constructor(private val context: Context, viewId: Int, args: Any?, binaryMessenger: BinaryMessenger) : PlatformView {
-    private var playerView: FrameLayout? = null
-   private var interactionMode: String = (args as? HashMap<*, *>)?.get("interactionMode") as? String ?: "both"
+   private var playerView: FrameLayout? = null
+    private var interactionMode: String = (args as? HashMap<*, *>)?.get("interactionMode") as? String ?: "both"
+    private var splitScreen: Boolean = (args as? HashMap<*, *>)?.get("splitScreen") as? Boolean ?: false
     private var videoPlayerController = VideoPlayerController(context, object: VideoPlayerController.ViewCreatedListener {
         override fun onViewCreated(view: View) {
             playerView?.removeAllViews()
@@ -23,7 +24,7 @@ class VideoView internal constructor(private val context: Context, viewId: Int, 
         override fun changeViewSize(args: HashMap<*, *>) {
             updateViewSize(args)
         }
-    }, viewId, binaryMessenger, interactionMode)
+    }, viewId, binaryMessenger, interactionMode, splitScreen)
 
     private val innerView: View by lazy {
         LayoutInflater.from(context).inflate(R.layout.video_view, null).apply {
