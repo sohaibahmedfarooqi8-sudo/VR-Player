@@ -111,7 +111,7 @@ class _VideoPlayerState extends State<VrPlayer> with WidgetsBindingObserver {
                 );
               },
               onCreatePlatformView: (params) {
-              return PlatformViewsService.initExpensiveAndroidView(
+             return PlatformViewsService.initSurfaceAndroidView(
                   id: params.id,
                  creationParams: {
                     'interactionMode': widget.interactionMode,
