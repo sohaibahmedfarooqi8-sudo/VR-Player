@@ -20,8 +20,10 @@ import io.flutter.plugin.common.MethodChannel
 class VideoPlayerController(
     private val context: Context,
     private val listener: ViewCreatedListener,
-    viewId: Int,
-    private val binaryMessenger: BinaryMessenger
+   viewId: Int,
+    private val binaryMessenger: BinaryMessenger,
+    private val interactionMode: String = "both",
+    private val splitScreen: Boolean = false
 ) : MethodChannel.MethodCallHandler {
     private var videoUrl: HashMap<*, *>? = null
     private var localPath: String? = null
@@ -286,8 +288,11 @@ class VideoPlayerController(
                         basicPlayer.seekTo(it.currentPosition)
                         isVRModeEnabled = true
                         toggleVRMode()
-                        if (it.isPlaying) basicPlayer.play()
+                       if (it.isPlaying) basicPlayer.play()
                         null
+                    }
+                    basicPlayer.getController(VRController::class.java)?.let { vr ->
+                        vr.setInteractionMode(resolveMode())
                     }
                     playerEventStateChanged?.success(mapOf(Pair("state", 1)))
                 }
@@ -323,11 +328,23 @@ class VideoPlayerController(
     private fun configureVRSettings(): VRSettings {
         val vrSettings = VRSettings()
         vrSettings.isFlingEnabled = true
-        vrSettings.isVrModeEnabled = false
-        vrSettings.interactionMode = VRInteractionMode.MotionWithTouch
-
+        vrSettings.isVrModeEnabled = splitScreen
+        vrSettings.interactionMode = resolveMode()
         vrSettings.isZoomWithPinchEnabled = true
         return vrSettings
+    }
+
+    private fun resolveMode(): VRInteractionMode = if (splitScreen) {
+        when (interactionMode) {
+            "motion" -> VRInteractionMode.CardboardMotion
+            else -> VRInteractionMode.CardboardMotionWithTouch
+        }
+    } else {
+        when (interactionMode) {
+            "touch" -> VRInteractionMode.Touch
+            "motion" -> VRInteractionMode.Motion
+            else -> VRInteractionMode.MotionWithTouch
+        }
     }
 
     fun dispose(isRebuilding: Boolean = false) {
