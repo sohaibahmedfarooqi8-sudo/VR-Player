@@ -347,20 +347,7 @@ class VideoPlayerController(
         }
     }
 
-    private fun resolveMode(): VRInteractionMode = if (splitScreen) {
-        when (interactionMode) {
-            "motion" -> VRInteractionMode.CardboardMotion
-            else -> VRInteractionMode.CardboardMotionWithTouch
-        }
-    } else {
-        when (interactionMode) {
-            "touch" -> VRInteractionMode.Touch
-            "motion" -> VRInteractionMode.Motion
-            else -> VRInteractionMode.MotionWithTouch
-        }
-    }
-
-    fun dispose(isRebuilding: Boolean = false) {
+   fun dispose(isRebuilding: Boolean = false) {
         player?.let {
             this.videoPlayerState = VideoPlayerState(it.currentPosition, it.isPlaying)
 
