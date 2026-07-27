@@ -20,6 +20,7 @@ class VrPlayer extends StatefulWidget {
   final double width;
   final double height;
   final String interactionMode;
+  final bool splitScreen;
 
   const VrPlayer({
     required this.onCreated,
@@ -28,9 +29,9 @@ class VrPlayer extends StatefulWidget {
     required this.width,
     required this.height,
     this.interactionMode = 'both',
+    this.splitScreen = false,
     super.key,
   });
-
   @override
   State<StatefulWidget> createState() => _VideoPlayerState();
 }
@@ -112,7 +113,10 @@ class _VideoPlayerState extends State<VrPlayer> with WidgetsBindingObserver {
               onCreatePlatformView: (params) {
               return PlatformViewsService.initExpensiveAndroidView(
                   id: params.id,
-                  creationParams: {'interactionMode': widget.interactionMode},
+                 creationParams: {
+                    'interactionMode': widget.interactionMode,
+                    'splitScreen': widget.splitScreen,
+                  },
                   creationParamsCodec: const StandardMessageCodec(),
                   layoutDirection: TextDirection.ltr,
                   viewType: viewType,
