@@ -20,9 +20,10 @@ import io.flutter.plugin.common.MethodChannel
 class VideoPlayerController(
     private val context: Context,
     private val listener: ViewCreatedListener,
-    viewId: Int,
+   viewId: Int,
     private val binaryMessenger: BinaryMessenger,
-    private val interactionMode: String = "both"
+    private val interactionMode: String = "both",
+    private val splitScreen: Boolean = false
 ) : MethodChannel.MethodCallHandler {
     private var videoUrl: HashMap<*, *>? = null
     private var localPath: String? = null
@@ -282,29 +283,19 @@ class VideoPlayerController(
     private fun addListener(basicPlayer: KalturaBasicPlayer) {
         basicPlayer.addListener<PlayerEvent.StateChanged>(this, PlayerEvent.stateChanged) { event ->
             when (event.newState) {
-             PlayerState.READY -> {
-    videoPlayerState = videoPlayerState?.let {
-        basicPlayer.seekTo(it.currentPosition)
-        isVRModeEnabled = true
-        toggleVRMode()
-        if (it.isPlaying) basicPlayer.play()
-        null
-    }
-
-    // NEW — force interactionMode via the runtime controller,
-    // not just the initial VRSettings preset.
-    basicPlayer.getController(com.kaltura.playkitvr.VRController::class.java)?.let { vr ->
-        val mode = when (interactionMode) {
-            "touch" -> VRInteractionMode.Touch
-            "motion" -> VRInteractionMode.Motion
-            else -> VRInteractionMode.MotionWithTouch
-        }
-        vr.setInteractionMode(mode)
-        android.util.Log.d("VrPlayerDebug", "runtime setInteractionMode = $mode")
-    }
-
-    playerEventStateChanged?.success(mapOf(Pair("state", 1)))
-}
+                PlayerState.READY -> {
+                    videoPlayerState = videoPlayerState?.let {
+                        basicPlayer.seekTo(it.currentPosition)
+                        isVRModeEnabled = true
+                        toggleVRMode()
+                       if (it.isPlaying) basicPlayer.play()
+                        null
+                    }
+                    basicPlayer.getController(VRController::class.java)?.let { vr ->
+                        vr.setInteractionMode(resolveMode())
+                    }
+                    playerEventStateChanged?.success(mapOf(Pair("state", 1)))
+                }
                 PlayerState.LOADING -> {
                     playerEventStateChanged?.success(mapOf(Pair("state", 0)))
                 }
@@ -335,17 +326,38 @@ class VideoPlayerController(
     }
 
    private fun configureVRSettings(): VRSettings {
-        android.util.Log.d("VrPlayerDebug", "interactionMode received = $interactionMode")
         val vrSettings = VRSettings()
         vrSettings.isFlingEnabled = true
-        vrSettings.isVrModeEnabled = false
-       vrSettings.interactionMode = when (interactionMode) {
+        vrSettings.isVrModeEnabled = splitScreen
+        vrSettings.interactionMode = resolveMode()
+        vrSettings.isZoomWithPinchEnabled = true
+        return vrSettings
+    }
+
+    private fun resolveMode(): VRInteractionMode = if (splitScreen) {
+        when (interactionMode) {
+            "motion" -> VRInteractionMode.CardboardMotion
+            else -> VRInteractionMode.CardboardMotionWithTouch
+        }
+    } else {
+        when (interactionMode) {
             "touch" -> VRInteractionMode.Touch
             "motion" -> VRInteractionMode.Motion
             else -> VRInteractionMode.MotionWithTouch
         }
-        vrSettings.isZoomWithPinchEnabled = true
-        return vrSettings
+    }
+
+    private fun resolveMode(): VRInteractionMode = if (splitScreen) {
+        when (interactionMode) {
+            "motion" -> VRInteractionMode.CardboardMotion
+            else -> VRInteractionMode.CardboardMotionWithTouch
+        }
+    } else {
+        when (interactionMode) {
+            "touch" -> VRInteractionMode.Touch
+            "motion" -> VRInteractionMode.Motion
+            else -> VRInteractionMode.MotionWithTouch
+        }
     }
 
     fun dispose(isRebuilding: Boolean = false) {
