@@ -8,7 +8,8 @@ class SpherePlayer extends StatefulWidget {
   final double width;
   final double height;
   final String videoUrl;
-  final String interactionMode; // 'touch' | 'motion' | 'both'
+final String interactionMode; // 'touch' | 'motion' | 'both'
+  final String shape; // 'sbs' | 'cardboard'
   final SpherePlayerCreatedCallback onCreated;
 
   const SpherePlayer({
@@ -17,6 +18,7 @@ class SpherePlayer extends StatefulWidget {
     required this.videoUrl,
     required this.onCreated,
     this.interactionMode = 'both',
+    this.shape = 'sbs',
     super.key,
   });
 
