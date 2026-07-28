@@ -5,7 +5,7 @@
 /// an omnidirectional camera or multiple cameras to record
 /// the entire panoramic view simultaneously.
 library;
-
+export 'src/sphere_player.dart';
 export 'src/vr_player.dart';
 export 'src/vr_player_controller.dart';
 export 'src/vr_player_created_callback.dart';
