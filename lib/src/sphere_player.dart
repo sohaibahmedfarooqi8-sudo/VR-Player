@@ -34,9 +34,10 @@ class _SpherePlayerState extends State<SpherePlayer> {
       height: widget.height,
       child: AndroidView(
         viewType: 'sphere_player_view',
-        creationParams: {
+       creationParams: {
           'videoUrl': widget.videoUrl,
           'interactionMode': widget.interactionMode,
+          'shape': widget.shape,
         },
         creationParamsCodec: const StandardMessageCodec(),
         onPlatformViewCreated: (id) {
