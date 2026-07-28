@@ -1,6 +1,7 @@
 package wtf.flutter.vr_player
 
 import VideoViewFactory
+import wtf.flutter.vr_player.vr_sphere.SpherePlayerViewFactory
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
@@ -16,9 +17,13 @@ class VrPlayer : FlutterPlugin, MethodCallHandler {
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPluginBinding) {
         val channel = MethodChannel(flutterPluginBinding.binaryMessenger, "vr_player")
         channel.setMethodCallHandler(VrPlayer());
-        flutterPluginBinding.platformViewRegistry.registerViewFactory(
+       flutterPluginBinding.platformViewRegistry.registerViewFactory(
             "plugins.vr_player/player_view",
             VideoViewFactory(flutterPluginBinding.binaryMessenger)
+        )
+        flutterPluginBinding.platformViewRegistry.registerViewFactory(
+            "sphere_player_view",
+            SpherePlayerViewFactory(flutterPluginBinding.binaryMessenger)
         )
     }
 
