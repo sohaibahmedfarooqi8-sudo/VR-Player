@@ -39,7 +39,6 @@ class SpherePlayerView(
        glView.setEGLContextClientVersion(2)
         renderer = SphereRenderer { surfaceTexture ->
             renderer.shape = shape
-               glView.setRenderer(renderer)
             (context as android.app.Activity).runOnUiThread {
                 player = ExoPlayer.Builder(context).build().apply {
                     setVideoSurface(Surface(surfaceTexture))
