@@ -53,4 +53,5 @@ dependencies {
     implementation 'com.kaltura.player:tvplayer:4.30.14'
     implementation 'com.kaltura.playkit:vrplugin:4.30.14'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.media3:media3-exoplayer:1.4.1'
 }
