@@ -19,11 +19,16 @@ final String interactionMode; // 'touch' | 'motion' | 'both'
     required this.videoUrl,
     required this.onCreated,
     this.interactionMode = 'both',
-    this.shape = 'sbs',
+   this.shape = 'sbs',
     super.key,
   });
 
-@override
+  @override
+  State<SpherePlayer> createState() => _SpherePlayerState();
+}
+
+class _SpherePlayerState extends State<SpherePlayer> {
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.width,
