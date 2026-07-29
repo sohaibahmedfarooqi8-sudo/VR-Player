@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart' as w;
 
 typedef SpherePlayerCreatedCallback = void Function(SpherePlayerController controller);
 
@@ -37,11 +37,11 @@ class _SpherePlayerState extends State<SpherePlayer> {
       height: widget.height,
       child: PlatformViewLink(
         viewType: 'sphere_player_view',
-      surfaceFactory: (context, controller) {
+     surfaceFactory: (context, controller) {
   return AndroidViewSurface(
     controller: controller as AndroidViewController,
     gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-    hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+    hitTestBehavior: w.PlatformViewHitTestBehavior.opaque,
   );
 },
         onCreatePlatformView: (params) {
