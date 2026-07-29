@@ -26,7 +26,9 @@ class SpherePlayerView(
     private val videoUrl = (args as? HashMap<*, *>)?.get("videoUrl") as? String
     private val shape = (args as? HashMap<*, *>)?.get("shape") as? String ?: "sbs"
 
-    private val glView = GLSurfaceView(context)
+    private val glView = GLSurfaceView(context).apply {
+    setZOrderOnTop(true)
+}
     private val renderer: SphereRenderer
     private var player: ExoPlayer? = null
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
