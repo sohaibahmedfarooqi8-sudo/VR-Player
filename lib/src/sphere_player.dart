@@ -36,11 +36,12 @@ class _SpherePlayerState extends State<SpherePlayer> {
       height: widget.height,
       child: PlatformViewLink(
         viewType: 'sphere_player_view',
-        surfaceFactory: (context, controller) => AndroidViewSurface(
-          controller: controller as AndroidViewController,
-          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-        ),
+       surfaceFactory: (context, controller) {
+  return AndroidViewSurface(
+    controller: controller as AndroidViewController,
+    gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+  );
+},
         onCreatePlatformView: (params) {
           return PlatformViewsService.initExpensiveAndroidView(
             id: params.id,
