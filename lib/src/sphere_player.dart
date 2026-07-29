@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
 
 typedef SpherePlayerCreatedCallback = void Function(SpherePlayerController controller);
 
@@ -22,26 +23,36 @@ final String interactionMode; // 'touch' | 'motion' | 'both'
     super.key,
   });
 
-  @override
-  State<SpherePlayer> createState() => _SpherePlayerState();
-}
-
-class _SpherePlayerState extends State<SpherePlayer> {
-  @override
+@override
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.width,
       height: widget.height,
-      child: AndroidView(
+      child: PlatformViewLink(
         viewType: 'sphere_player_view',
-       creationParams: {
-          'videoUrl': widget.videoUrl,
-          'interactionMode': widget.interactionMode,
-          'shape': widget.shape,
-        },
-        creationParamsCodec: const StandardMessageCodec(),
-        onPlatformViewCreated: (id) {
-          widget.onCreated(SpherePlayerController(id));
+        surfaceFactory: (context, controller) => AndroidViewSurface(
+          controller: controller as AndroidViewController,
+          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+        ),
+        onCreatePlatformView: (params) {
+          return PlatformViewsService.initExpensiveAndroidView(
+            id: params.id,
+            viewType: 'sphere_player_view',
+            layoutDirection: TextDirection.ltr,
+            creationParams: {
+              'videoUrl': widget.videoUrl,
+              'interactionMode': widget.interactionMode,
+              'shape': widget.shape,
+            },
+            creationParamsCodec: const StandardMessageCodec(),
+            onFocus: () {},
+          )
+            ..addOnPlatformViewCreatedListener((id) {
+              params.onPlatformViewCreated(id);
+              widget.onCreated(SpherePlayerController(id));
+            })
+            ..create();
         },
       ),
     );
