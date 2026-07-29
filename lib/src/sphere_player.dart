@@ -41,7 +41,7 @@ class _SpherePlayerState extends State<SpherePlayer> {
   return AndroidViewSurface(
     controller: controller as AndroidViewController,
     gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-    hitTestBehavior: w.PlatformViewHitTestBehavior.opaque,
+   hitTestBehavior: w.PlatformViewHitTestBehavior.opaque,
   );
 },
         onCreatePlatformView: (params) {
