@@ -26,7 +26,9 @@ class SpherePlayerView(
     private val videoUrl = (args as? HashMap<*, *>)?.get("videoUrl") as? String
     private val shape = (args as? HashMap<*, *>)?.get("shape") as? String ?: "sbs"
 
-    private val glView = GLSurfaceView(context).apply {
+   private val glView = GLSurfaceView(context).apply {
+    setEGLConfigChooser(8, 8, 8, 0, 16, 0) // R,G,B,Alpha=0,Depth,Stencil
+    holder.setFormat(android.graphics.PixelFormat.OPAQUE)
     setZOrderOnTop(true)
 }
     private val renderer: SphereRenderer
