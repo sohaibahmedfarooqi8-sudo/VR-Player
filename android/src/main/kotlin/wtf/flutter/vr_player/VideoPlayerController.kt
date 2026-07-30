@@ -222,32 +222,25 @@ class VideoPlayerController(
      *
      * @return - the list of sources.
      */
-    private fun createMediaSources(videoUrl: HashMap<*, *>): List<PKMediaSource> {
+   private fun createMediaSources(videoUrl: HashMap<*, *>): List<PKMediaSource> {
+    val mediaSource = PKMediaSource()
+    mediaSource.id = "testSource"
 
-        // Create new PKMediaSource instance.
-        val mediaSource = PKMediaSource()
+    val url = (videoUrl.get("videoPath") ?: videoUrl.get("videoUrl")) as String
+    val extension = url.substringAfterLast('.', "")
 
-        // Set the id.
-        mediaSource.id = "testSource"
+    mediaSource.url = url
+    mediaSource.mediaFormat = resolveMediaFormat(extension)
 
-        // Set the content url. In our case it will be link to hls source(.m3u8).
-        // Set the format of the source.
-        // In our case it will be hls
-        // in case of mpd/wvm formats you have to to call mediaSource.setDrmData method as well
-        if (videoUrl.get("videoPath") != null){
-            val url = videoUrl.get("videoPath") as String
-            val extension = url.substringAfterLast('.', "");
-            mediaSource.url = url
-            mediaSource.mediaFormat = if(extension=="mp4") PKMediaFormat.mp4 else PKMediaFormat.hls
-        } else {
-            val url = videoUrl.get("videoUrl") as String
-            val extension = url.substringAfterLast('.', "");
-            mediaSource.url = url
-            mediaSource.mediaFormat = if(extension=="mp4") PKMediaFormat.mp4 else PKMediaFormat.hls
-        }
+    return listOf(mediaSource)
+}
 
-        return listOf(mediaSource)
-    }
+private fun resolveMediaFormat(extension: String): PKMediaFormat = when (extension.lowercase()) {
+    "m3u8" -> PKMediaFormat.hls
+    "mpd" -> PKMediaFormat.dash
+    "wvm" -> PKMediaFormat.wvm
+    else -> PKMediaFormat.mp4 // progressive — covers mp4, webm, mov, mkv, etc.
+}
 
     private fun buildMediaOptions(entryId: String): OVPMediaOptions {
         val ovpMediaAsset = OVPMediaAsset()
