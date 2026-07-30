@@ -55,9 +55,10 @@ class SphereRenderer(private val onSurfaceReady: (SurfaceTexture) -> Unit) : GLS
         uniform samplerExternalOES sTexture;
         uniform vec2 uViewportSize;
         uniform float uCornerRadius;
+        uniform vec2 uViewportOrigin;
         void main() {
             if (uCornerRadius > 0.0) {
-                vec2 pos = gl_FragCoord.xy;
+                vec2 pos = gl_FragCoord.xy - uViewportOrigin;
                 vec2 halfSize = uViewportSize * 0.5;
                 vec2 center = halfSize;
                 vec2 d = abs(pos - center) - (halfSize - uCornerRadius);
@@ -86,21 +87,23 @@ class SphereRenderer(private val onSurfaceReady: (SurfaceTexture) -> Unit) : GLS
         surfaceTexture.getTransformMatrix(stMatrix)
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-       val halfWidth = (surfaceWidth - gapPx) / 2
+        val halfWidth = (surfaceWidth - gapPx) / 2
         val cornerRadius = if (shape == "cardboard") halfWidth * 0.18f else 0f
+
         // Left eye
         GLES20.glViewport(0, 0, halfWidth, surfaceHeight)
-        drawSphere(halfWidth, surfaceHeight, cornerRadius)
+        drawSphere(halfWidth, surfaceHeight, cornerRadius, 0f)
+
         // Right eye — same rotation, same texture, drawn again
         GLES20.glViewport(halfWidth + gapPx, 0, halfWidth, surfaceHeight)
-        drawSphere(halfWidth, surfaceHeight, cornerRadius)
+        drawSphere(halfWidth, surfaceHeight, cornerRadius, (halfWidth + gapPx).toFloat())
     }
 
-   private fun drawSphere(vpWidth: Int, vpHeight: Int, cornerRadius: Float = 0f) {
+  private fun drawSphere(vpWidth: Int, vpHeight: Int, cornerRadius: Float = 0f, originX: Float = 0f) {
         GLES20.glUseProgram(program)
         GLES20.glUniform2f(GLES20.glGetUniformLocation(program, "uViewportSize"), vpWidth.toFloat(), vpHeight.toFloat())
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "uCornerRadius"), cornerRadius)
-
+        GLES20.glUniform2f(GLES20.glGetUniformLocation(program, "uViewportOrigin"), originX, 0f)
         Matrix.setIdentityM(viewMatrix, 0)
         Matrix.rotateM(viewMatrix, 0, pitch, 1f, 0f, 0f)
         Matrix.rotateM(viewMatrix, 0, yaw, 0f, 1f, 0f)
