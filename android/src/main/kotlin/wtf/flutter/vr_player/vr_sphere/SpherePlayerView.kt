@@ -68,7 +68,7 @@ class SpherePlayerView(
         }
        if (interactionMode == "motion" || interactionMode == "both") {
     sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)?.let {
-       sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_FASTEST)
+     sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
     }
 }
 
@@ -110,7 +110,7 @@ private val remappedRotationMatrix = FloatArray(9)
 private var smoothedYaw = 0f
 private var smoothedPitch = 0f
 private var yawInitialized = false
-private val motionSmoothingFactor = 0.8f
+private val motionSmoothingFactor = 0.10f
     
 override fun onSensorChanged(event: SensorEvent) {
     if (event.sensor.type != Sensor.TYPE_ROTATION_VECTOR) return
