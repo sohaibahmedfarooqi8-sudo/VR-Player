@@ -30,7 +30,7 @@ class SphereRenderer(private val onSurfaceReady: (SurfaceTexture) -> Unit) : GLS
     @Volatile var yaw = 0f
     @Volatile var pitch = 0f
     @Volatile var shape = "sbs" // "sbs" | "cardboard"
-    private val gapPx = 6
+    private val gapPx = 0.1
 
     private var surfaceWidth = 0
     private var surfaceHeight = 0
