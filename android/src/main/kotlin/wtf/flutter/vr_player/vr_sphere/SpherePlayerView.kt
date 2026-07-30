@@ -27,9 +27,8 @@ class SpherePlayerView(
     private val shape = (args as? HashMap<*, *>)?.get("shape") as? String ?: "sbs"
 
    private val glView = GLSurfaceView(context).apply {
-    setEGLConfigChooser(8, 8, 8, 0, 16, 0) // R,G,B,Alpha=0,Depth,Stencil
+    setEGLConfigChooser(8, 8, 8, 0, 16, 0)
     holder.setFormat(android.graphics.PixelFormat.OPAQUE)
-    setZOrderOnTop(true)
 }
     private val renderer: SphereRenderer
     private var player: ExoPlayer? = null
@@ -67,11 +66,11 @@ class SpherePlayerView(
         if (interactionMode == "touch" || interactionMode == "both") {
             glView.setOnTouchListener { _, event -> handleTouch(event); true }
         }
-        if (interactionMode == "motion" || interactionMode == "both") {
-            sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)?.let {
-                sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
-            }
-        }
+       if (interactionMode == "motion" || interactionMode == "both") {
+    sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)?.let {
+        sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+    }
+}
 
         channel.setMethodCallHandler { call, result ->
             when (call.method) {
@@ -105,13 +104,17 @@ class SpherePlayerView(
         }
     }
 
-    override fun onSensorChanged(event: SensorEvent) {
-        if (event.sensor.type != Sensor.TYPE_GYROSCOPE) return
-        val dt = 1f / 60f
-        renderer.yaw -= Math.toDegrees((event.values[1] * dt).toDouble()).toFloat()
-        renderer.pitch = (renderer.pitch - Math.toDegrees((event.values[0] * dt).toDouble()).toFloat())
-            .coerceIn(-89f, 89f)
-    }
+   private val rotationMatrix = FloatArray(9)
+private val orientationAngles = FloatArray(3)
+
+override fun onSensorChanged(event: SensorEvent) {
+    if (event.sensor.type != Sensor.TYPE_ROTATION_VECTOR) return
+    SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
+    SensorManager.getOrientation(rotationMatrix, orientationAngles)
+    renderer.yaw = Math.toDegrees(orientationAngles[0].toDouble()).toFloat()
+    renderer.pitch = Math.toDegrees(orientationAngles[1].toDouble()).toFloat()
+        .coerceIn(-89f, 89f)
+}
 
     override fun onAccuracyChanged(sensor: android.hardware.Sensor?, accuracy: Int) {}
 
