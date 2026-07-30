@@ -32,7 +32,7 @@ class SphereGeometry(latBands: Int = 32, lonBands: Int = 32, radius: Float = 1f)
                 vertices.add((radius * y).toFloat())
                 vertices.add((radius * z).toFloat())
                 texCoords.add(lon.toFloat() / lonBands)
-                texCoords.add(lat.toFloat() / latBands)
+              texCoords.add(1f - lat.toFloat() / latBands)
             }
         }
 
