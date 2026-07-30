@@ -105,7 +105,7 @@ class SphereRenderer(private val onSurfaceReady: (SurfaceTexture) -> Unit) : GLS
         Matrix.rotateM(viewMatrix, 0, yaw, 0f, 1f, 0f)
 
         val aspect = vpWidth.toFloat() / vpHeight.toFloat()
-        Matrix.perspectiveM(projMatrix, 0, 90f, aspect, 1f, 10f)
+       Matrix.perspectiveM(projMatrix, 0, 90f, aspect, 0.1f, 10f)
         Matrix.multiplyMM(mvpMatrix, 0, projMatrix, 0, viewMatrix, 0)
 
         val posHandle = GLES20.glGetAttribLocation(program, "aPosition")
