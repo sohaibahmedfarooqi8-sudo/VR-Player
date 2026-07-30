@@ -106,14 +106,36 @@ class SpherePlayerView(
 
    private val rotationMatrix = FloatArray(9)
 private val orientationAngles = FloatArray(3)
-
+private val remappedRotationMatrix = FloatArray(9)
+private var smoothedYaw = 0f
+private var smoothedPitch = 0f
+private var yawInitialized = false
+private val motionSmoothingFactor = 0.15f
+    
 override fun onSensorChanged(event: SensorEvent) {
     if (event.sensor.type != Sensor.TYPE_ROTATION_VECTOR) return
     SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
-    SensorManager.getOrientation(rotationMatrix, orientationAngles)
-    renderer.yaw = Math.toDegrees(orientationAngles[0].toDouble()).toFloat()
-    renderer.pitch = Math.toDegrees(orientationAngles[1].toDouble()).toFloat()
-        .coerceIn(-89f, 89f)
+    SensorManager.remapCoordinateSystem(
+        rotationMatrix,
+        SensorManager.AXIS_X, SensorManager.AXIS_Z,
+        remappedRotationMatrix
+    )
+    SensorManager.getOrientation(remappedRotationMatrix, orientationAngles)
+
+    val rawYaw = Math.toDegrees(orientationAngles[0].toDouble()).toFloat()
+    val rawPitch = Math.toDegrees(orientationAngles[1].toDouble()).toFloat()
+
+    if (!yawInitialized) {
+        smoothedYaw = rawYaw
+        smoothedPitch = rawPitch
+        yawInitialized = true
+    } else {
+        smoothedYaw += (rawYaw - smoothedYaw) * motionSmoothingFactor
+        smoothedPitch += (rawPitch - smoothedPitch) * motionSmoothingFactor
+    }
+
+    renderer.yaw = smoothedYaw
+    renderer.pitch = smoothedPitch.coerceIn(-89f, 89f)
 }
 
     override fun onAccuracyChanged(sensor: android.hardware.Sensor?, accuracy: Int) {}
