@@ -95,7 +95,7 @@ class SphereRenderer(private val onSurfaceReady: (SurfaceTexture) -> Unit) : GLS
                 float dist = length(max(d, 0.0)) - uCornerRadius;
                 if (dist > 0.0) discard;
             }
-            gl_FragColor = texture2D(sTexture, vTexCoord);
+          gl_FragColor = texture2D(sTexture, vec2(vTexCoord.x, 1.0 - vTexCoord.y));
         }
     """.trimIndent()
 
