@@ -115,16 +115,16 @@ class SpherePlayerView(
                 lastTouchX = event.x
                 lastTouchY = event.y
             }
-            MotionEvent.ACTION_MOVE -> {
-                val dx = event.x - lastTouchX
-                val dy = event.y - lastTouchY
-                renderer.yaw -= dx * 0.3f
-                renderer.pitch = (renderer.pitch - dy * 0.3f).coerceIn(-89f, 89f)
-                renderer.yaw = smoothedYaw + touchYawOffset
-                renderer.pitch = (smoothedPitch + touchPitchOffset).coerceIn(-89f, 89f)
-                lastTouchX = event.x
-                lastTouchY = event.y
-            }
+           MotionEvent.ACTION_MOVE -> {
+    val dx = event.x - lastTouchX
+    val dy = event.y - lastTouchY
+    touchYawOffset -= dx * 0.3f
+    touchPitchOffset = (touchPitchOffset - dy * 0.3f).coerceIn(-89f, 89f)
+    renderer.yaw = smoothedYaw + touchYawOffset
+    renderer.pitch = (smoothedPitch + touchPitchOffset).coerceIn(-89f, 89f)
+    lastTouchX = event.x
+    lastTouchY = event.y
+}
         }
     }
 
@@ -158,8 +158,6 @@ class SpherePlayerView(
             smoothedPitch += (rawPitch - smoothedPitch) * motionSmoothingFactor
         }
 
-        renderer.yaw = smoothedYaw
-        renderer.pitch = smoothedPitch.coerceIn(-89f, 89f)
         renderer.yaw = smoothedYaw + touchYawOffset
        renderer.pitch = (smoothedPitch + touchPitchOffset).coerceIn(-89f, 89f)
     }
