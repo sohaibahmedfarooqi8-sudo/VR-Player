@@ -12,7 +12,8 @@ class SpherePlayer extends StatefulWidget {
   final double height;
   final String videoUrl;
 final String interactionMode; // 'touch' | 'motion' | 'both'
-  final String shape; // 'sbs' | 'cardboard'
+ final String shape; // 'sbs' | 'cardboard' | 'single'
+  final String mediaType; // 'video' | 'image'
   final SpherePlayerCreatedCallback onCreated;
 
   const SpherePlayer({
@@ -20,8 +21,9 @@ final String interactionMode; // 'touch' | 'motion' | 'both'
     required this.height,
     required this.videoUrl,
     required this.onCreated,
-    this.interactionMode = 'both',
+   this.interactionMode = 'both',
    this.shape = 'sbs',
+    this.mediaType = 'video',
     super.key,
   });
 
@@ -49,10 +51,11 @@ class _SpherePlayerState extends State<SpherePlayer> {
             id: params.id,
             viewType: 'sphere_player_view',
             layoutDirection: TextDirection.ltr,
-            creationParams: {
+           creationParams: {
               'videoUrl': widget.videoUrl,
               'interactionMode': widget.interactionMode,
               'shape': widget.shape,
+              'mediaType': widget.mediaType,
             },
             creationParamsCodec: const StandardMessageCodec(),
             onFocus: () {},
