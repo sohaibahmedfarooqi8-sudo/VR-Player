@@ -41,6 +41,8 @@ class SpherePlayerView(
 
     private var lastTouchX = 0f
     private var lastTouchY = 0f
+    private var touchYawOffset = 0f
+    private var touchPitchOffset = 0f
 
     init {
         glView.setEGLContextClientVersion(2)
@@ -118,6 +120,8 @@ class SpherePlayerView(
                 val dy = event.y - lastTouchY
                 renderer.yaw -= dx * 0.3f
                 renderer.pitch = (renderer.pitch - dy * 0.3f).coerceIn(-89f, 89f)
+                renderer.yaw = smoothedYaw + touchYawOffset
+                renderer.pitch = (smoothedPitch + touchPitchOffset).coerceIn(-89f, 89f)
                 lastTouchX = event.x
                 lastTouchY = event.y
             }
@@ -156,6 +160,8 @@ class SpherePlayerView(
 
         renderer.yaw = smoothedYaw
         renderer.pitch = smoothedPitch.coerceIn(-89f, 89f)
+        renderer.yaw = smoothedYaw + touchYawOffset
+       renderer.pitch = (smoothedPitch + touchPitchOffset).coerceIn(-89f, 89f)
     }
 
     override fun onAccuracyChanged(sensor: android.hardware.Sensor?, accuracy: Int) {}
