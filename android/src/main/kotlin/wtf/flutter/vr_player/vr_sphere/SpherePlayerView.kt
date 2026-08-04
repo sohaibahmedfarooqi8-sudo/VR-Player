@@ -59,6 +59,9 @@ class SpherePlayerView(
                         prepare()
                         playWhenReady = true
                         addListener(object : androidx.media3.common.Player.Listener {
+                            override fun onVideoSizeChanged(videoSize: androidx.media3.common.VideoSize) {
+                                surfaceTexture.setDefaultBufferSize(videoSize.width, videoSize.height)
+                            }
                             override fun onPlaybackStateChanged(state: Int) {
                                 if (state == androidx.media3.common.Player.STATE_READY) {
                                     channel.invokeMethod("onReady", mapOf("duration" to duration))
@@ -115,16 +118,16 @@ class SpherePlayerView(
                 lastTouchX = event.x
                 lastTouchY = event.y
             }
-           MotionEvent.ACTION_MOVE -> {
-    val dx = event.x - lastTouchX
-    val dy = event.y - lastTouchY
-    touchYawOffset -= dx * 0.3f
-    touchPitchOffset = (touchPitchOffset - dy * 0.3f).coerceIn(-89f, 89f)
-    renderer.yaw = smoothedYaw + touchYawOffset
-    renderer.pitch = (smoothedPitch + touchPitchOffset).coerceIn(-89f, 89f)
-    lastTouchX = event.x
-    lastTouchY = event.y
-}
+            MotionEvent.ACTION_MOVE -> {
+                val dx = event.x - lastTouchX
+                val dy = event.y - lastTouchY
+                touchYawOffset -= dx * 0.3f
+                touchPitchOffset = (touchPitchOffset - dy * 0.3f).coerceIn(-89f, 89f)
+                renderer.yaw = smoothedYaw + touchYawOffset
+                renderer.pitch = (smoothedPitch + touchPitchOffset).coerceIn(-89f, 89f)
+                lastTouchX = event.x
+                lastTouchY = event.y
+            }
         }
     }
 
@@ -159,7 +162,7 @@ class SpherePlayerView(
         }
 
         renderer.yaw = smoothedYaw + touchYawOffset
-       renderer.pitch = (smoothedPitch + touchPitchOffset).coerceIn(-89f, 89f)
+        renderer.pitch = (smoothedPitch + touchPitchOffset).coerceIn(-89f, 89f)
     }
 
     override fun onAccuracyChanged(sensor: android.hardware.Sensor?, accuracy: Int) {}
