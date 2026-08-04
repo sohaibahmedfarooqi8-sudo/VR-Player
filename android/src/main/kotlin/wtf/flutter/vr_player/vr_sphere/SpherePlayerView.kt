@@ -47,33 +47,38 @@ class SpherePlayerView(
     init {
         glView.setEGLContextClientVersion(2)
         renderer = SphereRenderer { surfaceTexture ->
-            renderer.shape = shape
-            renderer.mediaType = mediaType
-            if (mediaType == "image") {
-                decodeAndUploadImage()
-            } else {
-                (context as android.app.Activity).runOnUiThread {
-                    player = ExoPlayer.Builder(context).build().apply {
-                        setVideoSurface(Surface(surfaceTexture))
-                        videoUrl?.let { setMediaItem(MediaItem.fromUri(it)) }
-                        prepare()
-                        playWhenReady = true
-                        addListener(object : androidx.media3.common.Player.Listener {
-                            override fun onVideoSizeChanged(videoSize: androidx.media3.common.VideoSize) {
-                                surfaceTexture.setDefaultBufferSize(videoSize.width, videoSize.height)
-                            }
-                            override fun onPlaybackStateChanged(state: Int) {
-                                if (state == androidx.media3.common.Player.STATE_READY) {
-                                    channel.invokeMethod("onReady", mapOf("duration" to duration))
-                                } else if (state == androidx.media3.common.Player.STATE_ENDED) {
-                                    channel.invokeMethod("onFinished", null)
-                                }
-                            }
-                        })
+    renderer.shape = shape
+    renderer.mediaType = mediaType
+    if (mediaType == "image") {
+        decodeAndUploadImage()
+    } else {
+        // FIX: set a generous default buffer size BEFORE creating the Surface,
+        // so MediaCodec.configure() sees a properly-sized target from the start.
+        surfaceTexture.setDefaultBufferSize(3840, 2160)
+
+        (context as android.app.Activity).runOnUiThread {
+            player = ExoPlayer.Builder(context).build().apply {
+                setVideoSurface(Surface(surfaceTexture))
+                videoUrl?.let { setMediaItem(MediaItem.fromUri(it)) }
+                prepare()
+                playWhenReady = true
+                addListener(object : androidx.media3.common.Player.Listener {
+                    override fun onVideoSizeChanged(videoSize: androidx.media3.common.VideoSize) {
+                        // Still update to the *actual* size once known, for non-4K videos
+                        surfaceTexture.setDefaultBufferSize(videoSize.width, videoSize.height)
                     }
-                }
+                    override fun onPlaybackStateChanged(state: Int) {
+                        if (state == androidx.media3.common.Player.STATE_READY) {
+                            channel.invokeMethod("onReady", mapOf("duration" to duration))
+                        } else if (state == androidx.media3.common.Player.STATE_ENDED) {
+                            channel.invokeMethod("onFinished", null)
+                        }
+                    }
+                })
             }
         }
+    }
+}
         glView.setRenderer(renderer)
         glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
 
