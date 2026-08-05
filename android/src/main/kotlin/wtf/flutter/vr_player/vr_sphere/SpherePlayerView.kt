@@ -57,7 +57,9 @@ class SpherePlayerView(
         surfaceTexture.setDefaultBufferSize(3840, 2160)
 
         (context as android.app.Activity).runOnUiThread {
-            player = ExoPlayer.Builder(context).build().apply {
+         val renderersFactory = androidx.media3.exoplayer.DefaultRenderersFactory(context)
+    .setEnableDecoderFallback(true)
+player = ExoPlayer.Builder(context, renderersFactory).build().apply {
                 setVideoSurface(Surface(surfaceTexture))
                 videoUrl?.let { setMediaItem(MediaItem.fromUri(it)) }
                 prepare()
