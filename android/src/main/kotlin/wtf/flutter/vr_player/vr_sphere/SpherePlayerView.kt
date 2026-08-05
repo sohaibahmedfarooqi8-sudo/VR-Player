@@ -69,13 +69,23 @@ player = ExoPlayer.Builder(context, renderersFactory).build().apply {
                         // Still update to the *actual* size once known, for non-4K videos
                         surfaceTexture.setDefaultBufferSize(videoSize.width, videoSize.height)
                     }
-                    override fun onPlaybackStateChanged(state: Int) {
-                        if (state == androidx.media3.common.Player.STATE_READY) {
-                            channel.invokeMethod("onReady", mapOf("duration" to duration))
-                        } else if (state == androidx.media3.common.Player.STATE_ENDED) {
-                            channel.invokeMethod("onFinished", null)
-                        }
-                    }
+                   override fun onPlaybackStateChanged(state: Int) {
+    when (state) {
+        Player.STATE_BUFFERING -> {
+            channel.invokeMethod("onBuffering", true)
+        }
+
+        Player.STATE_READY -> {
+            channel.invokeMethod("onBuffering", false)
+            channel.invokeMethod("onReady", mapOf("duration" to duration))
+        }
+
+        Player.STATE_ENDED -> {
+            channel.invokeMethod("onBuffering", false)
+            channel.invokeMethod("onFinished", null)
+        }
+    }
+}
                 })
             }
         }
