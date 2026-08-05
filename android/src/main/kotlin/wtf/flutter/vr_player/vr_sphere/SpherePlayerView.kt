@@ -144,7 +144,7 @@ player = ExoPlayer.Builder(context, renderersFactory).build().apply {
     private var smoothedYaw = 0f
     private var smoothedPitch = 0f
     private var yawInitialized = false
-    private val motionSmoothingFactor = 0.31f
+    private val motionSmoothingFactor = 0.8f
 
     override fun onSensorChanged(event: SensorEvent) {
         if (event.sensor.type != Sensor.TYPE_ROTATION_VECTOR) return
@@ -159,14 +159,14 @@ player = ExoPlayer.Builder(context, renderersFactory).build().apply {
         val rawYaw = Math.toDegrees(orientationAngles[0].toDouble()).toFloat()
         val rawPitch = Math.toDegrees(orientationAngles[1].toDouble()).toFloat()
 
-        if (!yawInitialized) {
-            smoothedYaw = rawYaw
-            smoothedPitch = rawPitch
-            yawInitialized = true
-        } else {
-            smoothedYaw += (rawYaw - smoothedYaw) * motionSmoothingFactor
-            smoothedPitch += (rawPitch - smoothedPitch) * motionSmoothingFactor
-        }
+  if (!yawInitialized) {
+    smoothedYaw = rawYaw
+    smoothedPitch = rawPitch
+    yawInitialized = true
+} else {
+    smoothedYaw = smoothedYaw + shortestAngleDelta(smoothedYaw, rawYaw) * motionSmoothingFactor
+    smoothedPitch += (rawPitch - smoothedPitch) * motionSmoothingFactor
+}
 
         renderer.yaw = smoothedYaw + touchYawOffset
         renderer.pitch = (smoothedPitch + touchPitchOffset).coerceIn(-89f, 89f)
@@ -180,4 +180,11 @@ player = ExoPlayer.Builder(context, renderersFactory).build().apply {
         sensorManager.unregisterListener(this)
         player?.release()
     }
+}
+/** Shortest signed distance from `from` to `to`, in degrees, wrapping at ±180. */
+private fun shortestAngleDelta(from: Float, to: Float): Float {
+    var delta = (to - from) % 360f
+    if (delta > 180f) delta -= 360f
+    if (delta < -180f) delta += 360f
+    return delta
 }
