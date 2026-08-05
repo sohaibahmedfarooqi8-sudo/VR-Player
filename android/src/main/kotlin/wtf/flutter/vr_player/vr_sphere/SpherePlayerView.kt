@@ -144,7 +144,7 @@ player = ExoPlayer.Builder(context, renderersFactory).build().apply {
     private var smoothedYaw = 0f
     private var smoothedPitch = 0f
     private var yawInitialized = false
-    private val motionSmoothingFactor = 0.35f
+    private val motionSmoothingFactor = 0.31f
 
     override fun onSensorChanged(event: SensorEvent) {
         if (event.sensor.type != Sensor.TYPE_ROTATION_VECTOR) return
